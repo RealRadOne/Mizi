@@ -3,8 +3,6 @@
 
 #include "../include/helpers.hpp"
 using namespace std;
-unsigned int index = 0;
-
 
 char getLower(char c)
 {
@@ -33,58 +31,63 @@ void printError(int linenumber, string text) {
   cout << "Error at line " << linenumber << ". " << text << endl;
 }
 
-string add_ImgRL(string text,bool isImg)
+string add_ImgRL(string text,bool isImg,unsigned int index)
 {
     bool isURL=false;
+    bool head_end=false;
     string URL_head="";
     string URL_link="";
     //Sample Image= ![alt text](/src/of/image.jpg "title")
-    // Loop through urltext
     // Sample URL=[I'm an inline-style link](https://www.google.com)
-    // Getting the heading
-    while (index < text.size() && text[index] != ']' )
-    {
-        // Broken [text [text](link) case
-        if (text[index]-97>26 || text[index]-97<0)
-        {
-            isURL=false;
-            index++;
-            break;
-        }
-        URL_head += text[index];
-        index++;
-    }
-    if(index<text.size() && text[index+1]!='(')
-    {
-        isURL=false;
-    }
-    index++;
-    // Getting the URL
-    while (index < text.size() && text[index] != ')')
-    {                    
-        // Error [link](abc.com [link](abc.com)
-        if (text[index]-97>26 || text[index]-97<0)
-        {
-            isURL=false;
-            index++;
-            break;
-        }
-        URL_link += text[index];
-        index++;
-    }
 
+    for(unsigned int j=index;j< text.size();j++)
+    {
+        if(head_end==false)
+        {
+            if(text[j]==']')
+            {
+                head_end=true;
+                j++;
+                break;
+            }
+            else if(text[j]=='(' || text[j]==')' || text[j]=='[')
+            {
+                isURL=false;
+                break;
+            }
+            else
+                URL_head=URL_head+text[j];
+        }
+        else
+        {
+            if(text[j]==')')
+            {
+                isURL=false;
+                break;
+            }
+            else if(text[j]=='(' || text[j]=='[' || text[j]==']')
+            {
+                isURL=false;
+                break;
+            }
+            else
+            {
+                URL_link=URL_link+text[j];
+            }
+        }   
+    }
     if(isURL==true)
     {
         if(isImg==true)
-        return "<img src='" + URL_head + "' alt='" + URL_link + "'>";
+        return "<img src='" + URL_link + "' alt='" + URL_head + "'>";
         else
         {
-            return "<a href='" + URL_head + "'>" + URL_link + "</a>";
+            return "<a href='" + URL_link + "'>" + URL_head + "</a>";
         }
     }  
     else
     {
-        return URL_head+URL_link;
+        return text;
     } 
 }
 
@@ -92,19 +95,18 @@ string add_ImgRL(string text,bool isImg)
 string parseLinks(string text, string path)
 {
     path = "";
-    string label = text;
     string newText = "";
+    string label = text;
     bool isImage = false;
-    bool isTag = false;
+    bool isTag=false;
 
-    for (; index < text.size();)
+    for (unsigned int j=0;j<text.size();j++)
     {
-
         // Check if tag
-        if (text[index] == '{' && text[index + 1] == '{' && !isTag)
+        if (text[j] == '{' && text[j + 1] == '{' && !isTag)
         {
             isTag = true;
-            index += 2;
+            j += 2;
             continue;
         }
         
@@ -112,38 +114,43 @@ string parseLinks(string text, string path)
         if (isTag == true)
         {
             string tag = "";
-            while (index < text.size())
+            while (j < text.size())
             {
-                if(text[index] == '}' && text[index+1] == '}'){
+                if(text[j] == '}' && text[j+1] == '}'){
                     string filename = toLowerCase(tag);
                     string filepath = filename + ".html";
                     newText += "<a class='tag' href='" + filepath + "'>{{" + tag + "}}</a>";
                     isTag = false;
                     break;
                 }
-                tag += text[index];
-                index += 1;
+                tag += text[j];
+                j += 1;
             }
 
             //if bad tags
-            if(index == text.size() && isTag == true){
+            if(j == text.size() && isTag == true){
                 newText += "{{" + tag;
                 isTag = false;
             }
 
-            index += 2; // Increment index to new text;
+            j += 2; // Increment index to new text;
             continue;
         }
+
         // Enter into linking
         // ![ -> image flag true
-        if (text[index] == '!' && text[index + 1] == '[')
+        if (text[j] == '!' && text[j + 1] == '[')
         {
             isImage = true;
-            //newText=newText+ add_ImgRL(text,isImage);
+            newText=newText+ add_ImgRL(text,isImage,j);
         }
-        else if (text[index] == '[')
+        else if (text[j] == '[')
         {
-            //newText=newText+add_ImgRL(text,isImage);
+            newText=newText+add_ImgRL(text,isImage,j);
+        }
+        else
+        {
+            newText=newText+text[j];
         }
     }
     return newText;

@@ -67,7 +67,7 @@ vector<tuple<string,string,string,string>> testParseLinksProvider(){
     string path = "../site/";
     
     vector<tuple<string,string,string,string>> testParams;
-    /*vector<tuple<string,string,string,string>> linkTests = {
+    vector<tuple<string,string,string,string>> linkTests = {
         make_tuple(
             "Correct Link",
             "[urlText](url)",
@@ -184,7 +184,6 @@ vector<tuple<string,string,string,string>> testParseLinksProvider(){
     testParams.insert(testParams.begin(),tagTests.begin(),tagTests.end());
     testParams.insert(testParams.begin(),imageTests.begin(),imageTests.end());
     testParams.insert(testParams.begin(),linkTests.begin(),linkTests.end());
-    */
     return testParams;
 }
 
@@ -195,7 +194,6 @@ void testParseLinks()
 
     vector<tuple<string,string,string,string>> tests = testParseLinksProvider(); 
     int passed = 0;
-    /*
     for(auto test : tests){
         
         string testname = get<0>(test);
@@ -218,6 +216,5 @@ void testParseLinks()
         }
         
     }
-    */
     cout << "    " << passed << "/" << tests.size() << " TESTS PASSED " << endl;
 }

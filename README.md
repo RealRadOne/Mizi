@@ -14,10 +14,17 @@ Sample generated repo here : [mizi.netlify.com](https://mizi.netlify.com)
 
 ## Download and run
 - Clone / Download this repository
+<<<<<<< HEAD
 - Update `src/config.txt`
 - Update `src/website.md` 
 - Delete files inside `./site` folder
 - Build using `cd src; ./build.sh` or Run `main` to create site
+=======
+- `cd src`
+- Update `config.txt`
+- Update `website.md` 
+- Run `./build.sh`
+>>>>>>> bb0b371fc1746d26f4efb3f9759ccc59dbbb87cf
 - Open `index.html`
 
 ![](./media/mizi.png)
